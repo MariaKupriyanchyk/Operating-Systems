@@ -6,5 +6,8 @@ struct employee
 	double hours;
 };
 
-void printEmployee(const employee& e, double payRate);
 double calculateSalary(const employee& e, double payRate);
+
+int getValidId();
+void getValidName(char* name);
+double getValidHours();
