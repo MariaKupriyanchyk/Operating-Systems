@@ -23,9 +23,9 @@ int main(int argc, char* argv[]) {
 	for (int i = 0; i < count; i++) {
 		employee e;
 		cout << "Enter employee #" << (i + 1) << ":\n";
-		cout << "ID: "; cin >> e.num;
-		cout << "Name: "; cin >> e.name;
-		cout << "Hours: "; cin >> e.hours;
+		e.num = getValidId();
+		getValidName(e.name);
+		e.hours = getValidHours();
 
 		fout.write(reinterpret_cast<char*>(&e), sizeof(employee));
 	}
@@ -33,4 +33,5 @@ int main(int argc, char* argv[]) {
 	fout.close();
 
 	return 0;
+
 }
