@@ -1,7 +1,6 @@
 # Operating-Systems
 
-# Lab №1
-## Task Description
+## Lab №1
 The goal of this lab was to implement three console applications that interact with each other using processes:
 - **Main** — the main program that manages execution.
 - **Creator** — a utility that generates a binary file with employee records.
