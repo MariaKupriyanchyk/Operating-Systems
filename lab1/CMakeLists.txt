@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
-project(cmake_os_lab1_project)
+
+project(CMakeLab1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-enable_testing()
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Добавляем подпроекты
 add_subdirectory(cmake_os_lab1)
 add_subdirectory(tests)
