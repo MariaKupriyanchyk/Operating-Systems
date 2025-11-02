@@ -1,21 +1,25 @@
 #include "include/palindrome.h"
 #include <limits>
+#include <string>
+#include <stdexcept>
 
-bool is_palindrome_number(long long x) noexcept {
-    if (x < 0) return false;
-    if (x < 10) return true;
-
-    unsigned long long original = static_cast<unsigned long long>(x);
-    unsigned long long reversed = 0;
-    unsigned long long temp = original;
-
-    while (temp != 0) {
-        unsigned digit = static_cast<unsigned>(temp % 10);
-        if (reversed > (std::numeric_limits<unsigned long long>::max() - digit) / 10) {
-            return false;
-        }
-        reversed = reversed * 10 + digit;
-        temp /= 10;
+bool is_palindrome_number(const std::string& input) {
+    if (input.empty()) {
+        throw std::invalid_argument("Input cannot be empty");
     }
-    return reversed == original;
+
+    for (char c : input) {
+        if (!std::isdigit(static_cast<unsigned char>(c))) {
+            throw std::invalid_argument("Input contains non-digit characters");
+        }
+    }
+
+    int left = 0;
+    int right = static_cast<int>(input.size()) - 1;
+    while (left < right) {
+        if (input[left] != input[right]) return false;
+        ++left;
+        --right;
+    }
+    return true;
 }
