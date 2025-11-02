@@ -1,3 +1,4 @@
 #pragma once
+#include <string>
 
-bool is_palindrome_number(long long x) noexcept;
+bool is_palindrome_number(const std::string& input);
