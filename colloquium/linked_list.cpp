@@ -1,8 +1,10 @@
 #include "include/linked_list.h"
 #include <vector>
+#include <stdexcept>
+#include <iostream>
 
 template<typename T>
-void SinglyLinkedList<T>::push_back(const T& value) {
+void LinkedList<T>::push_back(const T& value) {
     auto new_node = std::make_unique<Node>(value);
     if (!head_) {
         head_ = std::move(new_node);
@@ -16,7 +18,18 @@ void SinglyLinkedList<T>::push_back(const T& value) {
 }
 
 template<typename T>
-void SinglyLinkedList<T>::reverse_iterative() noexcept {
+void LinkedList<T>::fill_sequential(int count) {
+    if (count <= 0) {
+        throw std::invalid_argument("LinkedList size must be positive");
+    }
+
+    for (int i = 1; i <= count; ++i) {
+        push_back(i);
+    }
+}
+
+template<typename T>
+void LinkedList<T>::reverse_iterative() {
     std::unique_ptr<Node> new_head = nullptr;
     while (head_) {
         std::unique_ptr<Node> current = std::move(head_);
@@ -28,7 +41,7 @@ void SinglyLinkedList<T>::reverse_iterative() noexcept {
 }
 
 template<typename T>
-std::vector<T> SinglyLinkedList<T>::to_vector() const {
+std::vector<T> LinkedList<T>::to_vector() const {
     std::vector<T> out;
     out.reserve(size_);
     Node* current = head_.get();
@@ -39,4 +52,4 @@ std::vector<T> SinglyLinkedList<T>::to_vector() const {
     return out;
 }
 
-template class SinglyLinkedList<int>;
+template class LinkedList<int>;
