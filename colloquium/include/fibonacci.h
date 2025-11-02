@@ -1,6 +1,5 @@
-﻿#pragma once
+#pragma once
 #include <vector>
-#include <cstdint>
-#include <stdexcept>
 
-std::vector<std::uint64_t> first_n_fibonacci(std::size_t n);
+std::vector<unsigned long long> first_n_fibonacci(int n);
+int read_positive_int();
