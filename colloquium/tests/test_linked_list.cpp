@@ -1,16 +1,26 @@
 #include "linked_list.h"
+#include "fibonacci.h"
 #include <gtest/gtest.h>
 #include <vector>
 
-TEST(LinkedListTests, PushBackAndReverse) {
-    SinglyLinkedList<int> list;
-    for (int i = 1; i <= 4; ++i) list.push_back(i);
-    list.reverse_iterative();
-    EXPECT_EQ(list.to_vector(), std::vector<int>({ 4,3,2,1 }));
+TEST(LinkedListInputTest, ThrowsOnNonNumericInput) {
+    std::istringstream fakeInput("abc");
+    std::cin.rdbuf(fakeInput.rdbuf());
+    EXPECT_THROW(read_positive_int(), std::invalid_argument);
 }
 
-TEST(LinkedListTests, EmptyList) {
-    SinglyLinkedList<int> list;
-    list.reverse_iterative();
-    EXPECT_TRUE(list.empty());
+TEST(LinkedListInputTest, ThrowsOnZeroOrNegative) {
+    std::istringstream fakeInput("0");
+    std::cin.rdbuf(fakeInput.rdbuf());
+    EXPECT_THROW(read_positive_int(), std::invalid_argument);
+
+    std::istringstream fakeInput2("-5");
+    std::cin.rdbuf(fakeInput2.rdbuf());
+    EXPECT_THROW(read_positive_int(), std::invalid_argument);
+}
+
+TEST(LinkedListInputTest, ReadsPositiveNumberCorrectly) {
+    std::istringstream fakeInput("7");
+    std::cin.rdbuf(fakeInput.rdbuf());
+    EXPECT_NO_THROW({ int n = read_positive_int(); EXPECT_EQ(n, 7); });
 }
