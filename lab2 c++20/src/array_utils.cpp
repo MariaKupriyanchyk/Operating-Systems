@@ -1,11 +1,11 @@
 #include "../include/array_utils.h"
-#include <ranges>
 
 std::vector<int> read_array_from_console() {
     int n;
     std::cout << "Enter number of elements: ";
-    if (!(std::cin >> n) || n <= 0)
+    if (!(std::cin >> n) || n <= 0) {
         throw std::invalid_argument("Invalid array size");
+    }
 
     std::vector<int> arr(n);
     std::cout << "Enter " << n << " integers:\n";
@@ -17,7 +17,8 @@ std::vector<int> read_array_from_console() {
 }
 
 void print_array(const std::vector<int>& arr) {
-    for (int x : arr | std::views::all)
+    for (int x : arr) {
         std::cout << x << " ";
+    }
     std::cout << "\n";
 }
