@@ -5,8 +5,8 @@
 #include <mutex>
 
 struct MinMaxResult {
-    int min = 0;
-    int max = 0;
+    long long min = 0;
+    long long max = 0;
 };
 
 DWORD WINAPI find_min_max(LPVOID param);
