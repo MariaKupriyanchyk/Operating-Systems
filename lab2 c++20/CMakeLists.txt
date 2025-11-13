@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.15)
 project(Os_lab2 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -16,11 +16,9 @@ add_executable(Os_lab2
     src/array_utils.cpp
     src/min_max_thread.cpp
     src/average_thread.cpp
-    src/thread_guard.cpp
     include/array_utils.h
     include/min_max_thread.h
     include/average_thread.h
-    include/thread_guard.h
 )
 
 include(FetchContent)
@@ -39,11 +37,9 @@ add_executable(Tests
     src/array_utils.cpp
     src/min_max_thread.cpp
     src/average_thread.cpp
-    src/thread_guard.cpp
     include/array_utils.h
     include/min_max_thread.h
     include/average_thread.h
-    include/thread_guard.h
 )
 target_link_libraries(Tests PRIVATE gtest_main)
 include(GoogleTest)
