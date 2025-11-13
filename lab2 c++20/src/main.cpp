@@ -1,7 +1,6 @@
-﻿#include "../include/array_utils.h"
+#include "../include/array_utils.h"
 #include "../include/min_max_thread.h"
 #include "../include/average_thread.h"
-#include "../include/thread_guard.h"
 
 #include <windows.h>
 #include <iostream>
@@ -15,15 +14,14 @@ int main() {
         HANDLE hMinMax = CreateThread(nullptr, 0, find_min_max, &arr, 0, nullptr);
         HANDLE hAverage = CreateThread(nullptr, 0, find_average, &arr, 0, nullptr);
 
-        if (!hMinMax || !hAverage) {
+        if (!hMinMax || !hAverage)
             throw std::runtime_error("Failed to create threads");
-        }
-
-        ThreadGuard guard1(hMinMax);
-        ThreadGuard guard2(hAverage);
 
         WaitForSingleObject(hMinMax, INFINITE);
         WaitForSingleObject(hAverage, INFINITE);
+
+        CloseHandle(hMinMax);
+        CloseHandle(hAverage);
 
         std::cout << "\nAll threads completed.\n";
 
