@@ -5,7 +5,9 @@ AverageResult g_avg_result;
 
 DWORD WINAPI find_average(LPVOID param) {
     auto* arr = static_cast<std::vector<int>*>(param);
-    if (!arr || arr->empty()) return 1;
+    if (!arr || arr->empty()) {
+        return 1;
+    }
 
     long long sum = 0;
     for (int x : *arr) {
@@ -17,6 +19,6 @@ DWORD WINAPI find_average(LPVOID param) {
     g_avg_result = { avg };
 
     std::lock_guard lock(g_console_mutex);
-    std::cout << "[average] Average = " << avg << "\n";
+    std::cout << "Average = " << avg << "\n";
     return 0;
 }
