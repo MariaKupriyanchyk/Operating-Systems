@@ -1,40 +1,91 @@
 #include "marker_manager.h"
 #include <iostream>
 
-int main() {
-    int size;
-    std::cout << "Enter array size: ";
-    std::cin >> size;
-
-    MarkerManager mgr(size);
-
-    int count;
-    std::cout << "Enter marker count: ";
-    std::cin >> count;
-
-    mgr.launch(count);
-    mgr.start_all();
-
-    while (mgr.any_alive()) {
-        mgr.wait_all_blocked();
-
-        std::cout << "\nArray state:\n";
-        mgr.print();
-
-        int id;
-        std::cout << "Enter marker id to terminate: ";
-        std::cin >> id;
-
-        mgr.terminate(id);
-
-        std::cout << "\nAfter termination:\n";
-        mgr.print();
-
-        mgr.resume_all();
+static int read_positive_int(const char* prompt) {
+    int value = 0;
+    while (true) {
+        std::cout << prompt;
+        if (!(std::cin >> value)) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cerr << "Error: enter a valid number.\n";
+            continue;
+        }
+        if (value <= 0) {
+            std::cerr << "Error: number must be > 0.\n";
+            continue;
+        }
+        return value;
     }
+}
 
-    mgr.join_all();
-    std::cout << "All markers finished\n";
+static int read_marker_id(int max_id) {
+    int id = 0;
+    while (true) {
+        std::cout << "Enter marker id to terminate: ";
+        if (!(std::cin >> id)) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cerr << "Invalid input! Please enter a number.\n";
+            continue;
+        }
+        if (id < 1 || id > max_id) {
+            std::cerr << "Marker id must be in range [1.." << max_id << "].\n";
+            continue;
+        }
+        return id;
+    }
+}
 
-    return 0;
+int main() {
+    try {
+        int size = read_positive_int("Enter array size: ");
+        MarkerManager manager(size);
+
+        int count = read_positive_int("Enter number of marker threads: ");
+        manager.launch(count);
+        manager.start_all();
+
+        while (manager.any_alive()) {
+            manager.wait_all_blocked();
+
+            std::cout << "\nArray state BEFORE termination:\n";
+            manager.print();
+
+            if (manager.alive_count() == 1) {
+                int last = manager.find_first_alive();
+                if (last != -1) {
+                    std::cout << "Only one marker (" << last << ") remains — terminating it automatically.\n";
+                    manager.terminate(last);
+                    std::cout << "\nArray state AFTER termination:\n";
+                    manager.print();
+                    break;
+                }
+            }
+
+            int id = read_marker_id(count);
+
+            if (!manager.terminate(id)) {
+                std::cerr << "Invalid or already terminated marker. Try another id.\n";
+                continue;
+            }
+
+            std::cout << "\nArray state AFTER termination:\n";
+            manager.print();
+
+            if (!manager.any_alive()) {
+                break;
+            }
+
+            manager.resume_all();
+        }
+
+        manager.join_all();
+        std::cout << "\nAll marker threads finished.\n";
+        return 0;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Unhandled exception: " << e.what() << std::endl;
+        return 2;
+    }
 }
