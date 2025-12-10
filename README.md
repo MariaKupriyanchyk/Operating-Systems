@@ -47,3 +47,27 @@ This laboratory work is dedicated to studying multithreaded programming. It is n
 ### C++98 Version
 - Corresponds to practices before the introduction of the standard thread library
 - Demonstrates low-level thread management
+
+## Lab3
+
+### Description
+It was required to develop a multithreaded console application consisting of a main thread (`main`) and several worker threads (`marker`).  
+The main thread controls the execution of the `marker` threads, while the `marker` threads mark elements of a shared array with their identifiers in a concurrent environment.
+
+The thread execution must be strictly synchronized according to the given logic:
+- simultaneous start of all threads,
+- waiting until all marker threads become blocked,
+- sequential termination of threads by user command,
+- correct cleanup of the array after each thread finishes.
+
+### The main thread:
+  - requests the array size and the number of threads,
+  - starts the `marker` threads,
+  - synchronously controls their execution,
+  - terminates selected threads and displays the array state.
+
+### The `marker` threads:
+  - generate random indices,
+  - attempt to mark array elements with their ID,
+  - notify the main thread if they cannot continue work,
+  - correctly clear their data upon termination.
