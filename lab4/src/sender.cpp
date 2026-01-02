@@ -12,11 +12,12 @@ int main(int argc, char* argv[]) {
     queue.signal_sender_ready();
 
     while (true) {
-        std::cout << "[Sender] command (send / quit): ";
+        std::cout << "[Sender] Commands: 1 - send | 2 - quit\n";
+
         std::string cmd;
         std::getline(std::cin, cmd);
 
-        if (cmd == "send") {
+        if (cmd == "1") {
             std::cout << "Enter message (< 20 chars): ";
             std::string msg;
             std::getline(std::cin, msg);
@@ -39,7 +40,7 @@ int main(int argc, char* argv[]) {
                 std::cout << "Send error: " << e.what() << "\n";
             }
         }
-        else if (cmd == "quit") {
+        else if (cmd == "2") {
             break;
         }
         else {
