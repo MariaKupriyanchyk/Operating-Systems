@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <regex>
 #include "file_queue.h"
 
 static PROCESS_INFORMATION start_sender(const std::string& exe, const std::string& file) {
@@ -28,30 +29,39 @@ static PROCESS_INFORMATION start_sender(const std::string& exe, const std::strin
     return pi;
 }
 
+static unsigned int read_positive_uint(const std::string& prompt) {
+    std::regex reg("^[1-9][0-9]*$");
+    std::string input;
+
+    while (true) {
+        std::cout << prompt;
+        std::getline(std::cin, input);
+
+        if (!std::regex_match(input, reg)) {
+            std::cout << "Invalid input. Enter a positive integer.\n";
+            continue;
+        }
+
+        try {
+            return static_cast<unsigned int>(std::stoul(input));
+        }
+        catch (...) {
+            std::cout << "Number is too large.\n";
+        }
+    }
+}
+
 int main() {
     std::string file;
-    unsigned int capacity;
-    unsigned int sender_count;
 
     std::cout << "Enter binary file name: ";
     std::getline(std::cin, file);
 
-    std::cout << "Enter number of records: ";
-    std::cin >> capacity;
+    unsigned int capacity =
+        read_positive_uint("Enter number of records: ");
 
-    if (capacity == 0) {
-        std::cout << "Capacity must be greater than 0\n";
-        return 1;
-    }
-
-    std::cout << "Enter number of Sender processes: ";
-    std::cin >> sender_count;
-    std::cin.ignore();
-
-    if (sender_count == 0) {
-        std::cout << "Sender count must be greater than 0\n";
-        return 1;
-    }
+    unsigned int sender_count =
+        read_positive_uint("Enter number of Sender processes: ");
 
     FileQueue queue(file, capacity);
 
@@ -62,15 +72,16 @@ int main() {
     queue.wait_all_senders(sender_count);
 
     while (true) {
-        std::cout << "[Receiver] command (read / quit): ";
+        std::cout << "[Receiver] Commands: 1 - read | 2 - quit\n";
+
         std::string cmd;
         std::getline(std::cin, cmd);
 
-        if (cmd == "read") {
+        if (cmd == "1") {
             std::string msg = queue.pop();
             std::cout << "Received message: " << msg << "\n";
         }
-        else if (cmd == "quit") {
+        else if (cmd == "2") {
             break;
         }
         else {
