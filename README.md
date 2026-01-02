@@ -122,3 +122,68 @@ Google Test is used to verify:
 - boundary conditions (empty and maximum-length messages),
 - rejection of invalid input,
 - robustness of the queue implementation.
+
+## Lab №5
+
+### Description
+This laboratory work is dedicated to studying **interprocess communication using named pipes** and controlled access of parallel processes to a shared file.
+The goal of the lab is to implement a **client–server system** where multiple client processes access a shared binary file through **named channels**, while the server guarantees correct synchronization and data consistency.
+The server coordinates access to file records, providing **exclusive access for modification** and **shared access for reading**, according to the specified rules.
+
+### Data Structure
+The binary file consists of records with the following structure:
+```c++
+struct employee {
+    int    num;        // employee ID
+    char   name[10];   // employee name
+    double hours;      // worked hours
+};
+```
+## Server Process
+The **Server** process:
+- Reads from the console:
+  - binary file name,
+  - employee data for file initialization.
+- Creates a binary file with employee records.
+- Displays the initial file contents.
+- Requests and launches a specified number of **Client** processes.
+- Handles client requests via **named pipes**:
+  - modification requests lock the record exclusively,
+  - read requests allow concurrent reading but block writers.
+- After all clients finish, outputs the modified file contents.
+- Terminates execution by console command.
+
+## Client Process
+Each **Client** process runs in a loop and allows the user to:
+- modify a file record,
+- read a file record,
+- exit the program.
+File access is performed using the employee **ID** as a key.
+
+### Record Modification
+- Requests record ID.
+- Sends modification request to the server.
+- Receives and displays current record.
+- Requests new field values.
+- Sends updated record to the server.
+- Releases access to the record.
+
+### Record Reading
+- Requests record ID.
+- Sends read request to the server.
+- Receives and displays the record.
+
+## Implementation Details
+- Interprocess communication is implemented using **named pipes**.
+- Access to file records follows the **reader–writer synchronization model**:
+  - exclusive access for writing,
+  - shared access for reading.
+- Input validation prevents incorrect data entry.
+- Data integrity is preserved during concurrent client execution.
+
+## Testing
+**Google Test** is used to verify:
+- correctness of input validation (ID, name, hours),
+- rejection of invalid input,
+- correct reading and modification of records,
+- stability of client–server interaction.
