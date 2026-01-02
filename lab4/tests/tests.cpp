@@ -1,6 +1,49 @@
 #include <gtest/gtest.h>
+#include <regex>
+#include <string>
 #include "file_queue.h"
 
+static bool is_valid_positive_uint(const std::string& input) {
+    static std::regex reg("^[1-9][0-9]*$");
+    return std::regex_match(input, reg);
+}
+
+//input tests
+TEST(InputValidationTest, ValidNumbers) {
+    EXPECT_TRUE(is_valid_positive_uint("1"));
+    EXPECT_TRUE(is_valid_positive_uint("10"));
+    EXPECT_TRUE(is_valid_positive_uint("999"));
+}
+
+TEST(InputValidationTest, RejectZero) {
+    EXPECT_FALSE(is_valid_positive_uint("0"));
+}
+
+TEST(InputValidationTest, RejectNegative) {
+    EXPECT_FALSE(is_valid_positive_uint("-1"));
+    EXPECT_FALSE(is_valid_positive_uint("-100"));
+}
+
+TEST(InputValidationTest, RejectLetters) {
+    EXPECT_FALSE(is_valid_positive_uint("abc"));
+    EXPECT_FALSE(is_valid_positive_uint("12a"));
+}
+
+TEST(InputValidationTest, RejectExpressions) {
+    EXPECT_FALSE(is_valid_positive_uint("2/1"));
+    EXPECT_FALSE(is_valid_positive_uint("1+2"));
+}
+
+TEST(InputValidationTest, RejectFractional) {
+    EXPECT_FALSE(is_valid_positive_uint("1.5"));
+    EXPECT_FALSE(is_valid_positive_uint("0.15"));
+}
+
+TEST(InputValidationTest, RejectEmptyString) {
+    EXPECT_FALSE(is_valid_positive_uint(""));
+}
+
+//fileQueue tests
 TEST(FileQueueTest, ValidMessage) {
     FileQueue q("test_valid.bin", 2);
     q.push("hello");
