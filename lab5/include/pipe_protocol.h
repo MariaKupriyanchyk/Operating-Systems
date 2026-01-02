@@ -1,12 +1,12 @@
 #pragma once
-#include <windows.h>
 #include "employee.h"
 
 enum RequestType {
-    REQ_READ = 1,
-    REQ_WRITE = 2,
-    REQ_RELEASE = 3,
-    REQ_EXIT = 4
+    REQ_READ,
+    REQ_MODIFY_BEGIN,
+    REQ_MODIFY_COMMIT,
+    REQ_RELEASE,
+    REQ_EXIT
 };
 
 struct PipeRequest {
@@ -16,11 +16,6 @@ struct PipeRequest {
 };
 
 struct PipeResponse {
-    bool success;
+    int success;
     employee data;
 };
-
-void send_request(HANDLE pipe, const PipeRequest& req);
-void receive_request(HANDLE pipe, PipeRequest& req);
-void send_response(HANDLE pipe, const PipeResponse& resp);
-void receive_response(HANDLE pipe, PipeResponse& resp);
