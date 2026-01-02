@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.16)
 project(Os_lab5 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -8,17 +8,16 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_library(Main
     src/file_storage.cpp
-    src/pipe_protocol.cpp
-)
+    src/employee.cpp)
 
 add_executable(server
     src/server.cpp
-)
+    src/employee.cpp)
 target_link_libraries(server PRIVATE Main)
 
 add_executable(client
     src/client.cpp
-)
+    src/employee.cpp)
 target_link_libraries(client PRIVATE Main)
 
 include(FetchContent)
@@ -32,8 +31,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(Tests
-    tests/tests.cpp
-)
+    tests/tests.cpp)
 target_link_libraries(Tests PRIVATE Main gtest_main)
 
 include(GoogleTest)
