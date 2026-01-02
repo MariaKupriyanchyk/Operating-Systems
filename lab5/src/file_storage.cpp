@@ -1,21 +1,15 @@
+#include <windows.h>
 #include <iostream>
 #include "file_storage.h"
-#include "pipe_protocol.h"
-#include "employee.h"
 
-FileStorage::FileStorage(const std::string& file)
-    : file_name_(file) {
-    mutex_ = CreateMutexA(nullptr, FALSE, nullptr);
-}
+FileStorage::FileStorage(const std::string& filename)
+    : filename_(filename) {}
 
 employee FileStorage::read_by_id(int id, bool& found) {
-    WaitForSingleObject(mutex_, INFINITE);
-
-    employee emp{};
     found = false;
 
     HANDLE file = CreateFileA(
-        file_name_.c_str(),
+        filename_.c_str(),
         GENERIC_READ,
         FILE_SHARE_READ,
         nullptr,
@@ -24,29 +18,27 @@ employee FileStorage::read_by_id(int id, bool& found) {
         nullptr
     );
 
-    if (file == INVALID_HANDLE_VALUE) {
-        ReleaseMutex(mutex_);
-        return emp;
-    }
+    if (file == INVALID_HANDLE_VALUE)
+        return {};
 
+    employee emp{};
     DWORD read;
+
     while (ReadFile(file, &emp, sizeof(emp), &read, nullptr) && read == sizeof(emp)) {
         if (emp.num == id) {
             found = true;
-            break;
+            CloseHandle(file);
+            return emp;
         }
     }
 
     CloseHandle(file);
-    ReleaseMutex(mutex_);
-    return emp;
+    return {};
 }
 
-bool FileStorage::write_by_id(const employee& emp) {
-    WaitForSingleObject(mutex_, INFINITE);
-
+bool FileStorage::write_by_id(int id, const employee& updated) {
     HANDLE file = CreateFileA(
-        file_name_.c_str(),
+        filename_.c_str(),
         GENERIC_READ | GENERIC_WRITE,
         0,
         nullptr,
@@ -55,32 +47,39 @@ bool FileStorage::write_by_id(const employee& emp) {
         nullptr
     );
 
-    if (file == INVALID_HANDLE_VALUE) {
-        ReleaseMutex(mutex_);
+    if (file == INVALID_HANDLE_VALUE)
         return false;
-    }
 
+    employee current{};
     DWORD read;
-    employee cur{};
-    while (ReadFile(file, &cur, sizeof(cur), &read, nullptr) && read == sizeof(cur)) {
-        if (cur.num == emp.num) {
-            SetFilePointer(file, -static_cast<LONG>(sizeof(cur)), nullptr, FILE_CURRENT);
+    DWORD pos = 0;
+
+    while (ReadFile(file, &current, sizeof(current), &read, nullptr) && read == sizeof(current)) {
+        if (current.num == id) {
+            employee to_write = updated;
+            to_write.num = id;
+
+            SetFilePointer(file, pos, nullptr, FILE_BEGIN);
+
             DWORD written;
-            WriteFile(file, &emp, sizeof(emp), &written, nullptr);
+            WriteFile(file, &to_write, sizeof(to_write), &written, nullptr);
             CloseHandle(file);
-            ReleaseMutex(mutex_);
-            return true;
+            return written == sizeof(to_write);
         }
+        pos += sizeof(employee);
     }
 
     CloseHandle(file);
-    ReleaseMutex(mutex_);
     return false;
+}
+
+bool FileStorage::write_by_id(const employee& updated) {
+    return write_by_id(updated.num, updated);
 }
 
 void FileStorage::print_all() {
     HANDLE file = CreateFileA(
-        file_name_.c_str(),
+        filename_.c_str(),
         GENERIC_READ,
         FILE_SHARE_READ,
         nullptr,
@@ -94,30 +93,10 @@ void FileStorage::print_all() {
 
     employee emp{};
     DWORD read;
+
     while (ReadFile(file, &emp, sizeof(emp), &read, nullptr) && read == sizeof(emp)) {
         std::cout << emp.num << " | " << emp.name << " | " << emp.hours << "\n";
     }
 
     CloseHandle(file);
-}
-
-int FileStorage::size() const {
-    HANDLE file = CreateFileA(
-        file_name_.c_str(),
-        GENERIC_READ,
-        FILE_SHARE_READ,
-        nullptr,
-        OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL,
-        nullptr
-    );
-
-    if (file == INVALID_HANDLE_VALUE)
-        return 0;
-
-    LARGE_INTEGER sz{};
-    GetFileSizeEx(file, &sz);
-    CloseHandle(file);
-
-    return static_cast<int>(sz.QuadPart / sizeof(employee));
 }
