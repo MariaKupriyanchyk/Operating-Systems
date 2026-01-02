@@ -1,20 +1,16 @@
 #pragma once
 #include <string>
-#include <vector>
-#include <windows.h>
 #include "pipe_protocol.h"
 
 class FileStorage {
 public:
-    FileStorage(const std::string& file);
+    FileStorage(const std::string& filename);
 
     employee read_by_id(int id, bool& found);
-    bool write_by_id(const employee& emp);
-
+    bool write_by_id(int id, const employee& updated);
+    bool write_by_id(const employee& updated);
     void print_all();
-    int size() const;
 
 private:
-    std::string file_name_;
-    HANDLE mutex_;
+    std::string filename_;
 };
