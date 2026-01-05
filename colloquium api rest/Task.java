@@ -1,19 +1,29 @@
 package org.example;
 
-public class Task {
-    private Long id;
-    private String title;
-    private String description;
-    private TaskStatus status;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
+@Entity
+@Table(name = "tasks")
+public class Task {
     public Task() {}
 
-    public Task(Long id, String title, String description, TaskStatus status) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.status = status;
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank(message = "Title must not be empty")
+    @Size(min = 1, max = 100, message = "Title length must be between 1 and 100 characters")
+    @Column(nullable = false)
+    private String title;
+
+    @Size(max = 500, message = "Description must be at most 500 characters")
+    private String description;
+
+    @NotNull(message = "Status is required")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskStatus status;
 
     public Long getId() {
         return id;
