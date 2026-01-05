@@ -1,59 +1,48 @@
 package org.example;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
 
-    private final TaskService service;
+    private final TaskService taskService;
 
-    public TaskController(TaskService service) {
-        this.service = service;
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
     @GetMapping
     public List<Task> getAllTasks() {
-        return service.getAll();
+        return taskService.getAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTask(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(service.getById(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public Task getTaskById(@PathVariable Long id) {
+        return taskService.getById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        Task created = service.create(task);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Task createTask(@Valid @RequestBody Task task) {
+        return taskService.create(task);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(
+    public Task updateTask(
             @PathVariable Long id,
-            @RequestBody Task task
+            @Valid @RequestBody Task task
     ) {
-        try {
-            return ResponseEntity.ok(service.update(id, task));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return taskService.update(id, task);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        try {
-            service.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTask(@PathVariable Long id) {
+        taskService.delete(id);
     }
 }
