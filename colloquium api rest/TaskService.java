@@ -1,5 +1,7 @@
 package org.example;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -12,31 +14,33 @@ public class TaskService {
         this.repository = repository;
     }
 
+    @Cacheable("tasks")
     public List<Task> getAll() {
         return repository.findAll();
     }
 
+    @Cacheable(value = "task", key = "#id")
     public Task getById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
     }
 
+    @CacheEvict(value = {"tasks", "task"}, allEntries = true)
     public Task create(Task task) {
         return repository.save(task);
     }
 
+    @CacheEvict(value = {"tasks", "task"}, allEntries = true)
     public Task update(Long id, Task updated) {
-        Task existing = getById(id);
-        existing.setTitle(updated.getTitle());
-        existing.setDescription(updated.getDescription());
-        existing.setStatus(updated.getStatus());
-        return repository.save(existing);
+        Task task = getById(id);
+        task.setTitle(updated.getTitle());
+        task.setDescription(updated.getDescription());
+        task.setStatus(updated.getStatus());
+        return repository.save(task);
     }
 
+    @CacheEvict(value = {"tasks", "task"}, allEntries = true)
     public void delete(Long id) {
-        if (!repository.exists(id)) {
-            throw new RuntimeException("Task not found");
-        }
-        repository.delete(id);
+        repository.deleteById(id);
     }
 }
