@@ -2,7 +2,10 @@ package org.example;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @Service
@@ -22,7 +25,8 @@ public class TaskService {
     @Cacheable(value = "task", key = "#id")
     public Task getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Task with id " + id + " not found"));
     }
 
     @CacheEvict(value = {"tasks", "task"}, allEntries = true)
