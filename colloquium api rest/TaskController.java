@@ -1,7 +1,10 @@
 package org.example;
 
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,26 +13,31 @@ import java.util.List;
 @RequestMapping("/tasks")
 public class TaskController {
 
-    private final TaskService taskService;
+    private static final Logger log = LoggerFactory.getLogger(TaskController.class);
 
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
+    private final TaskService service;
+
+    public TaskController(TaskService service) {
+        this.service = service;
     }
 
     @GetMapping
     public List<Task> getAllTasks() {
-        return taskService.getAll();
+        log.info("GET /tasks");
+        return service.getAll();
     }
 
     @GetMapping("/{id}")
     public Task getTaskById(@PathVariable Long id) {
-        return taskService.getById(id);
+        log.info("GET /tasks/{}", id);
+        return service.getById(id);
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Task createTask(@Valid @RequestBody Task task) {
-        return taskService.create(task);
+    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
+        log.info("POST /tasks, title='{}'", task.getTitle());
+        Task created = service.create(task);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
@@ -37,12 +45,14 @@ public class TaskController {
             @PathVariable Long id,
             @Valid @RequestBody Task task
     ) {
-        return taskService.update(id, task);
+        log.info("PUT /tasks/{}", id);
+        return service.update(id, task);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTask(@PathVariable Long id) {
-        taskService.delete(id);
+        log.info("DELETE /tasks/{}", id);
+        service.delete(id);
     }
 }
