@@ -6,6 +6,7 @@ import jakarta.validation.constraints.*;
 @Entity
 @Table(name = "tasks")
 public class Task {
+
     public Task() {}
 
     @Id
@@ -13,11 +14,13 @@ public class Task {
     private Long id;
 
     @NotBlank(message = "Title must not be empty")
-    @Size(min = 1, max = 100, message = "Title length must be between 1 and 100 characters")
+    @Size(max = 100, message = "Title length must be at most 100 characters")
     @Column(nullable = false)
     private String title;
 
+    @NotBlank(message = "Description must not be empty")
     @Size(max = 500, message = "Description must be at most 500 characters")
+    @Column(nullable = false)
     private String description;
 
     @NotNull(message = "Status is required")
