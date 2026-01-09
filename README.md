@@ -48,7 +48,7 @@ This laboratory work is dedicated to studying multithreaded programming. It is n
 - Corresponds to practices before the introduction of the standard thread library
 - Demonstrates low-level thread management
 
-## Lab3
+## Lab №3
 
 ### Description
 It was required to develop a multithreaded console application consisting of a main thread (`main`) and several worker threads (`marker`).  
@@ -139,7 +139,8 @@ struct employee {
     double hours;      // worked hours
 };
 ```
-## Server Process
+
+### Server Process
 The **Server** process:
 - Reads from the console:
   - binary file name,
@@ -153,7 +154,7 @@ The **Server** process:
 - After all clients finish, outputs the modified file contents.
 - Terminates execution by console command.
 
-## Client Process
+### Client Process
 Each **Client** process runs in a loop and allows the user to:
 - modify a file record,
 - read a file record,
@@ -173,7 +174,7 @@ File access is performed using the employee **ID** as a key.
 - Sends read request to the server.
 - Receives and displays the record.
 
-## Implementation Details
+### Implementation Details
 - Interprocess communication is implemented using **named pipes**.
 - Access to file records follows the **reader–writer synchronization model**:
   - exclusive access for writing,
@@ -181,9 +182,85 @@ File access is performed using the employee **ID** as a key.
 - Input validation prevents incorrect data entry.
 - Data integrity is preserved during concurrent client execution.
 
-## Testing
+### Testing
 **Google Test** is used to verify:
 - correctness of input validation (ID, name, hours),
 - rejection of invalid input,
 - correct reading and modification of records,
 - stability of client–server interaction.
+  
+## Colloquium REST API
+
+### Description
+This laboratory work is devoted to studying the principles of **RESTful API design**, **client–server interaction**, and **backend application development**.
+The goal of the lab is to implement a REST API for managing a list of tasks (To-Do List) that supports **CRUD operations** (Create, Read, Update, Delete) using standard HTTP methods and JSON data format.
+The application follows a layered architecture and demonstrates interaction between controller, service, repository, and database layers.
+
+### Task Resource
+Each task is represented by the following structure:
+```json
+{
+  "id": 1,
+  "title": "Task title",
+  "description": "Task description",
+  "status": "todo"
+}
+```
+
+### Task Fields
+Each task contains the following fields:
+- **id** — unique identifier of the task  
+- **title** — task title (must not be empty)  
+- **description** — task description (must not be empty)  
+- **status** — task status (`todo`, `in_progress`, `done`)
+
+### Database Interaction
+- Persistence is implemented using **Spring Data JPA**
+- During testing, an **H2 in-memory database** is used
+- Task identifiers are generated automatically
+- Database constraints ensure data integrity
+
+### Caching
+To improve application performance, caching is implemented:
+- task retrieval by ID is cached
+- cache is updated on task modification
+- cache entries are removed on task deletion
+
+### Testing
+The application includes automated tests for all layers.
+
+#### Repository Tests
+- verify correct persistence of entities
+- use in-memory database
+
+#### Service Tests
+- verify business logic
+- use mocked repository
+
+#### Controller Tests
+- verify REST endpoints
+- validate HTTP status codes
+- test input validation and error handling
+
+### Implementation Details
+- REST API is implemented using **Spring Boot**
+- JSON serialization and deserialization are handled by **Jackson**
+- Validation is implemented via **Jakarta Bean Validation**
+- Exception handling returns appropriate HTTP responses
+- The application follows a layered architecture:
+  - Controller
+  - Service
+  - Repository
+  - Database
+
+### Technologies Used
+- Java 17
+- Spring Boot
+- Spring Web
+- Spring Data JPA
+- Spring Validation
+- Spring Cache
+- H2 Database
+- JUnit 5
+- Mockito
+- Docker
